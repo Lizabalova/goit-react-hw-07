@@ -3,9 +3,8 @@ import css from "./ContactForm.module.css";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useId } from "react";
-import { nanoid } from "nanoid";
 import { useDispatch } from "react-redux";
-import { addContact } from "../../redux/contactsSlice";
+import { addContact } from "../../redux/contactsOps";
 
 const FeedbackSchema = Yup.object().shape({
   username: Yup.string()
@@ -13,7 +12,10 @@ const FeedbackSchema = Yup.object().shape({
     .max(50, "Too Long!")
     .required("Required"),
   number: Yup.string()
-   
+    .matches(
+      /^(?:\d{10}|\d{3}-\d{3}-\d{2}-\d{2})$/,
+      "Phone number must be 10 digits long or in format xxx-xxx-xx-xx"
+    )
     .required("Required"),
 });
 
@@ -29,7 +31,6 @@ const ContactForm = () => {
       validationSchema={FeedbackSchema}
       onSubmit={(values, actions) => {
         const newContact = {
-          id: nanoid(),
           name: values.username,
           number: values.number,
         };
